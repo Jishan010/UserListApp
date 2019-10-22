@@ -2,62 +2,43 @@ package com.mobility.myapplication.view
 
 import android.os.Bundle
 import android.util.Log
-import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import com.google.android.material.snackbar.Snackbar
 import com.mobility.myapplication.R
 import com.mobility.myapplication.model.User
-import com.mobility.myapplication.network.ServiceBuilder
-import com.mobility.myapplication.network.ServiceInterface
-
+import com.mobility.myapplication.viewmodel.UserViewModel
 import kotlinx.android.synthetic.main.activity_main.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
 
-    private var serviceInterface: ServiceInterface? = null
+    private var userViewModel : UserViewModel? = null
+    private var userList : List<User>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        serviceInterface =
-            ServiceBuilder.getRetrofitInstance()!!.create(ServiceInterface::class.java)
+        userViewModel = ViewModelProviders.of(this).get(UserViewModel::class.java)
+        userViewModel?.getUserList()?.observe(this,
+            Observer<List<User>> { users ->
+                userList = users
+                for (user in users)
+                {
+                    Log.d("Main",user.login)
+                }
 
-        getUserList()
+            })
+
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
 
         }
-    }
-
-
-    private fun getUserList() {
-        val callUserList = serviceInterface!!.getUserList()
-        callUserList.enqueue(object : Callback<List<User>> {
-            override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
-                if (response.isSuccessful) {
-                    val responseBody = response.body()!!
-                    for (user in responseBody)
-                        Log.d("Response", user.login)
-                }
-            }
-
-            override fun onFailure(call: Call<List<User>>, t: Throwable) {
-                Toast.makeText(
-                    this@MainActivity,
-                    "Error Occurred" + t.toString(),
-                    Toast.LENGTH_LONG
-                ).show()
-                Log.d("FailRes", t.toString())
-            }
-        })
     }
 
 

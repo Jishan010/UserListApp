@@ -1,5 +1,6 @@
 package com.mobility.myapplication.model
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 
 /**
@@ -10,10 +11,10 @@ import androidx.room.*
 interface UserDao {
 
     @Query("Select * from User_table")
-    fun getUserList(): List<User>
+    fun getUserList(): LiveData<List<User>>
 
     @Insert
-    fun inserUser(user: User)
+    fun insertUser(user: User)
 
     @Delete
     fun deleteUser(user: User)
