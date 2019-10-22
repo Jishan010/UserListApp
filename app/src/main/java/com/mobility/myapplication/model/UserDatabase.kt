@@ -33,7 +33,6 @@ abstract class UserDatabase : RoomDatabase() {
         private var userDataBaseInstance: UserDatabase? = null
 
         internal fun getInstance(context: Context): UserDatabase? {
-
             if (userDataBaseInstance == null) {
                 userDataBaseInstance =
                     Room.databaseBuilder(context, UserDatabase::class.java, "UserDatabase")
