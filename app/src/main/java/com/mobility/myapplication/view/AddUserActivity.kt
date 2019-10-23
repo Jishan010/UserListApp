@@ -4,10 +4,10 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
+import android.os.Environment.DIRECTORY_PICTURES
 import android.provider.MediaStore
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -19,32 +19,34 @@ import androidx.core.content.FileProvider
 import com.mobility.myapplication.BuildConfig
 import com.mobility.myapplication.R
 import com.mobility.myapplication.view.MainActivity.Companion.AVATAR_URL_USER
-import com.mobility.myapplication.view.MainActivity.Companion.INSERT_REQUEST_CODE
 import com.mobility.myapplication.view.MainActivity.Companion.LOGIN_USER
 import com.mobility.myapplication.view.MainActivity.Companion.TYPE_USER
 import kotlinx.android.synthetic.main.activity_add_user.*
 import java.io.File
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 class AddUserActivity : AppCompatActivity() {
 
     private val PERMISSION_REQUEST_CODE = 1
     private var currentPhotoPath: String? = null
-    private var fileUri: Uri? = null
+    private var userName: String? = null
     private val CAMERA_REQUEST = 1888
     private var userTypeList: Array<String>? = null
     private var selectedUserType: String? = null
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_user)
         bindSpinnerData()
+        userName = userNameEditText.text.toString()
         addImageButton.setOnClickListener {
             openCamera()
         }
-        userTypeSpinner.setOnItemSelectedListener(object : AdapterView.OnItemSelectedListener {
+
+        userTypeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parentView: AdapterView<*>,
                 selectedItemView: View,
@@ -53,12 +55,29 @@ class AddUserActivity : AppCompatActivity() {
             ) {
                 selectedUserType = userTypeList!![position]
             }
-
             override fun onNothingSelected(parentView: AdapterView<*>) {
                 // your code here
             }
 
-        })
+        }
+
+        addUserButton.setOnClickListener {
+
+            if (selectedUserType != null && currentPhotoPath != null && userName != null) {
+                val intent = Intent(this, MainActivity::class.java)
+                intent.putExtra(LOGIN_USER, userName)
+                intent.putExtra(TYPE_USER, selectedUserType)
+                intent.putExtra(AVATAR_URL_USER, currentPhotoPath)
+                setResult(Activity.RESULT_OK, intent)
+                finish()
+            } else {
+                Toast.makeText(
+                    this,
+                    resources.getText(R.string.warning_msg),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
 
     }
 
@@ -76,32 +95,56 @@ class AddUserActivity : AppCompatActivity() {
         if (!checkPermission()) {
             requestPermission()
         } else {
-            startCamera()
+            launchCamera()
         }
     }
 
 
-    private fun getOutputMediaFileUri(): Uri {
-        return FileProvider.getUriForFile(
-            this,
-            BuildConfig.APPLICATION_ID + ".provider",
-            getOutputMediaFile()
+    @Throws(IOException::class)
+    private fun createImageFile(): File {
+        val timeStamp = SimpleDateFormat(
+            "yyyyMMdd_HHmmss",
+            Locale.getDefault()
+        ).format(Date())
+        val imageFileName = "IMG_" + timeStamp + "_"
+        val storageDir = getExternalFilesDir(DIRECTORY_PICTURES)
+        val image = File.createTempFile(
+            imageFileName, /* prefix */
+            ".jpg", /* suffix */
+            storageDir      /* directory */
         )
-
+        currentPhotoPath = image.absolutePath
+        return image
     }
 
-    private fun getOutputMediaFile(): File {
-        val sdDir = Environment.getExternalStorageDirectory()
-        val mediaStorageDir = File(sdDir.absolutePath + File.separator + "User")
-        if (!mediaStorageDir.exists()) {
-            mediaStorageDir.mkdir()
+
+    private fun launchCamera() {
+        val pictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        if (pictureIntent.resolveActivity(packageManager) != null) {
+            //Create a file to store the image
+            var photoFile: File? = null;
+            try {
+                photoFile = createImageFile()
+            } catch (ex: IOException) {
+
+            }
+            if (photoFile != null) {
+                val photoURI =
+                    FileProvider.getUriForFile(
+                        this,
+                        BuildConfig.APPLICATION_ID + ".provider",
+                        photoFile
+                    )
+                pictureIntent.putExtra(
+                    MediaStore.EXTRA_OUTPUT,
+                    photoURI
+                )
+                startActivityForResult(
+                    pictureIntent,
+                    CAMERA_REQUEST
+                )
+            }
         }
-        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-        val mediaFile: File
-        mediaFile =
-            File(mediaStorageDir.absolutePath + File.separator + "IMG_" + timeStamp + ".jpg")
-        currentPhotoPath = "file:" + mediaFile.absolutePath
-        return mediaFile
     }
 
     private fun checkPermission(): Boolean {
@@ -144,32 +187,16 @@ class AddUserActivity : AppCompatActivity() {
     ) {
         when (requestCode) {
             PERMISSION_REQUEST_CODE -> if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                startCamera()
+                launchCamera()
             }
         }
     }
 
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
-            val imageUri = Uri.parse(currentPhotoPath)
-            Toast.makeText(this, imageUri.toString(), Toast.LENGTH_LONG).show()
-            val intent = Intent(this, MainActivity::class.java)
-            intent.putExtra(LOGIN_USER, userNameEditText.text.toString())
-            intent.putExtra(TYPE_USER, selectedUserType)
-            intent.putExtra(AVATAR_URL_USER, imageUri)
-            setResult(INSERT_REQUEST_CODE!!, intent)
-            finish()
+            Log.d("ImagePath", currentPhotoPath)
         }
     }
-
-    private fun startCamera() {
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        fileUri = getOutputMediaFileUri()
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri)
-        startActivityForResult(intent, CAMERA_REQUEST)
-    }
-
 
 }

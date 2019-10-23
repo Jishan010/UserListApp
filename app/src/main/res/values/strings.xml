@@ -5,6 +5,7 @@
     <string name="camera_permission_reason">Camera permission allows us to use take pictures. Please allow in App Settings for additional functionality.</string>
     <string name="user_name">user name</string>
     <string name="add_user">Add User</string>
+    <string name="warning_msg">Please insert all the details !</string>
     <string-array name="userType">
         <item>Admin</item>
         <item>Normal User</item>
