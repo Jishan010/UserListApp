@@ -1,5 +1,7 @@
 package com.mobility.myapplication.view
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -24,6 +26,15 @@ class MainActivity : AppCompatActivity() {
     private var recyclerView: RecyclerView? = null
     private var userListAdapter: UserListAdapter? = null
 
+
+    companion object {
+        val LOGIN_USER: String? = "login_user"
+        val TYPE_USER: String? = "type_user"
+        val AVATAR_URL_USER: String? = "avatar_user"
+        val INSERT_REQUEST_CODE :Int?= 1
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -36,9 +47,6 @@ class MainActivity : AppCompatActivity() {
         userViewModel?.getUserList()?.observe(this,
             Observer<List<User>> { users ->
                 userList = users
-                for (user in users) {
-                    Log.d("Main", user.login)
-                }
                 userListAdapter!!.submitList(users)
 
             })
@@ -72,8 +80,8 @@ class MainActivity : AppCompatActivity() {
         })
 
         fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+            val intent = Intent(this, AddUserActivity::class.java)
+            startActivityForResult(intent, INSERT_REQUEST_CODE!!)
 
         }
     }
@@ -100,6 +108,21 @@ class MainActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recycle_view)
         recyclerView?.layoutManager = (LinearLayoutManager(this, RecyclerView.VERTICAL, false))
         recyclerView?.hasFixedSize()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == INSERT_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            val user = User()
+            user.login = data!!.getStringExtra(LOGIN_USER)
+            user.type = data!!.getStringExtra(TYPE_USER)
+            user.avatarUrl = data!!.getStringExtra(AVATAR_URL_USER)
+            //adding the new user locally
+            userViewModel?.insertUser(user)
+
+        }
+
     }
 
 }

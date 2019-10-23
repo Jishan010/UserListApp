@@ -26,20 +26,20 @@ class UserRepository(application: Application) {
     }
 
     fun insertNote(user: User) {
-        insertAsyncTask().execute(user)
+        InsertAsyncTask().execute(user)
     }
 
     fun updateNote(user: User) {
-        updateAsyncTask().execute(user)
+        UpdateAsyncTask().execute(user)
     }
 
     fun deleteNote(user: User) {
-        deleteAsyncTask().execute(user)
+        DeleteAsyncTask().execute(user)
     }
 
 
     //async task for inserting users
-    class insertAsyncTask : AsyncTask<User, Void, Void>() {
+    class InsertAsyncTask : AsyncTask<User, Void, Void>() {
         override fun doInBackground(vararg users: User): Void? {
             userDao?.insertUser(users[0])
             return null
@@ -47,7 +47,7 @@ class UserRepository(application: Application) {
     }
 
     //async task for deleting users
-    class deleteAsyncTask : AsyncTask<User, Void, Void>() {
+    class DeleteAsyncTask : AsyncTask<User, Void, Void>() {
         override fun doInBackground(vararg users: User): Void? {
             userDao?.deleteUser(users[0])
             return null
@@ -55,7 +55,7 @@ class UserRepository(application: Application) {
     }
 
     //async task for updating users
-    class updateAsyncTask : AsyncTask<User, Void, Void>() {
+    class UpdateAsyncTask : AsyncTask<User, Void, Void>() {
         override fun doInBackground(vararg users: User): Void? {
             userDao?.updateUser(users[0])
             return null

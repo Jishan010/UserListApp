@@ -16,18 +16,18 @@ import com.google.gson.annotations.Expose
 data class User(
 
     @PrimaryKey(autoGenerate = true)
-    val id : Int? = null,
+    var id : Int? = null,
 
     @ColumnInfo(name = "login_column")
     @SerializedName("login")
-    val login: String? = null,
+    var login: String? = null,
 
     @ColumnInfo(name = "avatar_url_column")
     @SerializedName("avatar_url")
-    val avatarUrl: String? = null,
+    var avatarUrl: String? = null,
 
     @ColumnInfo(name = "type_column")
     @SerializedName("type")
-    val type: String? = null
+    var type: String? = null
 
 )
