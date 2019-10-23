@@ -41,7 +41,7 @@ class AddUserActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_user)
         bindSpinnerData()
-        userName = userNameEditText.text.toString()
+
         addImageButton.setOnClickListener {
             openCamera()
         }
@@ -55,6 +55,7 @@ class AddUserActivity : AppCompatActivity() {
             ) {
                 selectedUserType = userTypeList!![position]
             }
+
             override fun onNothingSelected(parentView: AdapterView<*>) {
                 // your code here
             }
@@ -62,8 +63,8 @@ class AddUserActivity : AppCompatActivity() {
         }
 
         addUserButton.setOnClickListener {
-
-            if (selectedUserType != null && currentPhotoPath != null && userName != null) {
+            userName = userNameEditText.text.toString()
+            if (selectedUserType != null && currentPhotoPath != null && userName!!.isNotEmpty()) {
                 val intent = Intent(this, MainActivity::class.java)
                 intent.putExtra(LOGIN_USER, userName)
                 intent.putExtra(TYPE_USER, selectedUserType)
