@@ -12,12 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
-import com.facebook.drawee.backends.pipeline.Fresco
-import com.facebook.imagepipeline.common.ResizeOptions
-import com.facebook.imagepipeline.request.ImageRequestBuilder
 import com.mobility.myapplication.R
 import com.mobility.myapplication.model.User
-import java.io.File
 
 
 /**
