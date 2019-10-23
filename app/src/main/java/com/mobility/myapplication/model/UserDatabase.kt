@@ -22,11 +22,11 @@ import retrofit2.Response
 abstract class UserDatabase : RoomDatabase() {
 
     abstract fun getNoteDao(): UserDao
-    private val context :Context? =null;
 
     fun cleanUp() {
         userDataBaseInstance = null
     }
+
 
     companion object {
 
@@ -37,6 +37,8 @@ abstract class UserDatabase : RoomDatabase() {
                 userDataBaseInstance =
                     Room.databaseBuilder(context, UserDatabase::class.java, "UserDatabase")
                         .addCallback(roomCallback).build()
+
+
             }
             return userDataBaseInstance
         }

@@ -26,7 +26,6 @@ class MainActivity : AppCompatActivity() {
     private var recyclerView: RecyclerView? = null
     private var userListAdapter: UserListAdapter? = null
 
-
     companion object {
         val LOGIN_USER: String? = "login_user"
         val TYPE_USER: String? = "type_user"
@@ -35,7 +34,6 @@ class MainActivity : AppCompatActivity() {
         val INSERT_REQUEST_CODE: Int? = 1
         val UPDATE_REQUEST_CODE: Int? = 2
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,9 +83,7 @@ class MainActivity : AppCompatActivity() {
         })
 
         fab.setOnClickListener { view ->
-            val intent = Intent(this@MainActivity, AddUserActivity::class.java)
-            startActivityForResult(intent, INSERT_REQUEST_CODE!!)
-
+            startActivityForResult(Intent(this@MainActivity, AddUserActivity::class.java), INSERT_REQUEST_CODE!!)
         }
     }
 
@@ -119,9 +115,7 @@ class MainActivity : AppCompatActivity() {
                 //deleting the user locally
                 userViewModel?.deleteUser(user)
             }
-
         }
-
     }
 
 }

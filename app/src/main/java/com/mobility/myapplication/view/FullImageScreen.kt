@@ -22,6 +22,7 @@ class FullImageScreen : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_full_image_screen)
         bundle = intent.extras
+        supportActionBar!!.title=bundle?.getString(LOGIN_USER)
         val imageUrl = bundle?.getString(AVATAR_URL_USER)
         val requestOptions = RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL)
         Glide.with(this).load(imageUrl).apply(requestOptions)
