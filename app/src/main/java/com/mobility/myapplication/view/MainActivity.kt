@@ -31,7 +31,9 @@ class MainActivity : AppCompatActivity() {
         val LOGIN_USER: String? = "login_user"
         val TYPE_USER: String? = "type_user"
         val AVATAR_URL_USER: String? = "avatar_user"
-        val INSERT_REQUEST_CODE :Int?= 1
+        val ID: String? = "id"
+        val INSERT_REQUEST_CODE: Int? = 1
+        val UPDATE_REQUEST_CODE: Int? = 2
     }
 
 
@@ -48,9 +50,7 @@ class MainActivity : AppCompatActivity() {
             Observer<List<User>> { users ->
                 userList = users
                 userListAdapter!!.submitList(users)
-
             })
-
 
         //swipe to delete functionality starts from here
         ItemTouchHelper(object :
@@ -75,31 +75,19 @@ class MainActivity : AppCompatActivity() {
 
         userListAdapter?.setOnItemClickListener(object : UserListAdapter.OnItemClickListener {
             override fun updateUser(user: User) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                val intent = Intent(this@MainActivity, FullImageScreen::class.java)
+                intent.putExtra(ID, user.id)
+                intent.putExtra(LOGIN_USER, user.login)
+                intent.putExtra(TYPE_USER, user.type)
+                intent.putExtra(AVATAR_URL_USER, user.avatarUrl)
+                startActivityForResult(intent, UPDATE_REQUEST_CODE!!)
             }
         })
 
         fab.setOnClickListener { view ->
-            val intent = Intent(this, AddUserActivity::class.java)
+            val intent = Intent(this@MainActivity, AddUserActivity::class.java)
             startActivityForResult(intent, INSERT_REQUEST_CODE!!)
 
-        }
-    }
-
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
         }
     }
 
@@ -120,6 +108,17 @@ class MainActivity : AppCompatActivity() {
             user.avatarUrl = data!!.getStringExtra(AVATAR_URL_USER)
             //adding the new user locally
             userViewModel?.insertUser(user)
+
+        } else if (requestCode == UPDATE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            val user = User()
+            user.id = data!!.getIntExtra(ID, -1)
+            if (user.id != -1) {
+                user.login = data!!.getStringExtra(LOGIN_USER)
+                user.type = data!!.getStringExtra(TYPE_USER)
+                user.avatarUrl = data!!.getStringExtra(AVATAR_URL_USER)
+                //deleting the user locally
+                userViewModel?.deleteUser(user)
+            }
 
         }
 
