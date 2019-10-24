@@ -17,10 +17,11 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.mobility.myapplication.BuildConfig
+import com.mobility.myapplication.Constants.AVATAR_URL_USER
+import com.mobility.myapplication.Constants.LOGIN_USER
+import com.mobility.myapplication.Constants.TYPE_USER
 import com.mobility.myapplication.R
-import com.mobility.myapplication.view.MainActivity.Companion.AVATAR_URL_USER
-import com.mobility.myapplication.view.MainActivity.Companion.LOGIN_USER
-import com.mobility.myapplication.view.MainActivity.Companion.TYPE_USER
+import com.mobility.myapplication.showMessage
 import kotlinx.android.synthetic.main.activity_add_user.*
 import java.io.File
 import java.io.IOException
@@ -37,10 +38,14 @@ class AddUserActivity : AppCompatActivity() {
     private var userTypeList: Array<String>? = null
     private var selectedUserType: String? = null
 
+    companion object{
+        val LOG=AddUserActivity::class.java.simpleName
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_user)
-        supportActionBar!!.title=resources.getString(R.string.add_user)
+        supportActionBar!!.title = resources.getString(R.string.add_user)
         bindSpinnerData()
 
         addImageButton.setOnClickListener {
@@ -73,11 +78,7 @@ class AddUserActivity : AppCompatActivity() {
                 setResult(Activity.RESULT_OK, intent)
                 finish()
             } else {
-                Toast.makeText(
-                    this,
-                    resources.getText(R.string.warning_msg),
-                    Toast.LENGTH_LONG
-                ).show()
+                showMessage(resources.getString(R.string.warning_msg))
             }
         }
 
@@ -124,7 +125,7 @@ class AddUserActivity : AppCompatActivity() {
         val pictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (pictureIntent.resolveActivity(packageManager) != null) {
             //Create a file to store the image
-            var photoFile: File? = null;
+            var photoFile: File? = null
             try {
                 photoFile = createImageFile()
             } catch (ex: IOException) {
@@ -161,19 +162,14 @@ class AddUserActivity : AppCompatActivity() {
             ActivityCompat.shouldShowRequestPermissionRationale(
                 this,
                 Manifest.permission.CAMERA
-            ) -> Toast.makeText(
-                this,
-                resources.getText(R.string.camera_permission_reason),
-                Toast.LENGTH_LONG
-            ).show()
+            ) ->
+                showMessage(resources.getString(R.string.camera_permission_reason))
+
             ActivityCompat.shouldShowRequestPermissionRationale(
                 this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) -> Toast.makeText(
-                this,
-                resources.getText(R.string.storage_permission_reason),
-                Toast.LENGTH_LONG
-            ).show()
+            ) ->
+                showMessage(resources.getString(R.string.storage_permission_reason))
             else -> ActivityCompat.requestPermissions(
                 this,
                 arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE),
@@ -197,7 +193,7 @@ class AddUserActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
-            Log.d("ImagePath", currentPhotoPath)
+            Log.d(LOG, currentPhotoPath)
         }
     }
 

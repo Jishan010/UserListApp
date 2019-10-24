@@ -9,11 +9,11 @@ import android.view.MenuItem
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.mobility.myapplication.Constants.AVATAR_URL_USER
+import com.mobility.myapplication.Constants.ID
+import com.mobility.myapplication.Constants.LOGIN_USER
+import com.mobility.myapplication.Constants.TYPE_USER
 import com.mobility.myapplication.R
-import com.mobility.myapplication.view.MainActivity.Companion.AVATAR_URL_USER
-import com.mobility.myapplication.view.MainActivity.Companion.ID
-import com.mobility.myapplication.view.MainActivity.Companion.LOGIN_USER
-import com.mobility.myapplication.view.MainActivity.Companion.TYPE_USER
 import kotlinx.android.synthetic.main.activity_full_image_screen.*
 
 class FullImageScreen : AppCompatActivity() {
@@ -22,12 +22,12 @@ class FullImageScreen : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_full_image_screen)
         bundle = intent.extras
-        supportActionBar!!.title=bundle?.getString(LOGIN_USER)
-        val imageUrl = bundle?.getString(AVATAR_URL_USER)
-        val requestOptions = RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL)
-        Glide.with(this).load(imageUrl).apply(requestOptions)
-            .into(full_screen_image)
-
+        bundle?.let {
+            supportActionBar!!.title = it.getString(LOGIN_USER)
+            val requestOptions = RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL)
+            Glide.with(this).load(it.getString(AVATAR_URL_USER)).apply(requestOptions)
+                .into(full_screen_image)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -40,12 +40,15 @@ class FullImageScreen : AppCompatActivity() {
         return when (item.itemId) {
             R.id.action_delete -> {
                 val intent = Intent(this, MainActivity::class.java)
-                intent.putExtra(ID, bundle?.getInt(ID))
-                intent.putExtra(LOGIN_USER, bundle?.getString(LOGIN_USER))
-                intent.putExtra(TYPE_USER, bundle?.getString(TYPE_USER))
-                intent.putExtra(AVATAR_URL_USER, bundle?.getString(AVATAR_URL_USER))
-                setResult(Activity.RESULT_OK, intent)
-                finish()
+                bundle?.let {
+                    intent.putExtra(ID, it.getInt(ID))
+                    intent.putExtra(LOGIN_USER, it.getString(LOGIN_USER))
+                    intent.putExtra(TYPE_USER, it.getString(TYPE_USER))
+                    intent.putExtra(AVATAR_URL_USER, it.getString(AVATAR_URL_USER))
+                    setResult(Activity.RESULT_OK, intent)
+                    finish()
+                }
+
                 return true
             }
             else -> super.onOptionsItemSelected(item)

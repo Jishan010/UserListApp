@@ -38,8 +38,8 @@ class UserListAdapter : ListAdapter<User, UserListAdapter.MyUserViewHolder>(diff
 
 
     override fun onBindViewHolder(holder: MyUserViewHolder, position: Int) {
-        val note = getItem(position)
-        holder.onBind(note)
+        val user = getItem(position)
+        holder.onBind(user)
     }
 
 
@@ -62,7 +62,8 @@ class UserListAdapter : ListAdapter<User, UserListAdapter.MyUserViewHolder>(diff
             userNameTextView.text = user.login
             userTypeTextView.text = user.type
             val requestOptions = RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL)
-            Glide.with(itemView.context).load(user.avatarUrl).apply(requestOptions.override(80,80)).into(imageView)
+            Glide.with(itemView.context).load(user.avatarUrl).apply(requestOptions.override(80, 80))
+                .into(imageView)
         }
     }
 

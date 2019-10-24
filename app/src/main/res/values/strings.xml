@@ -8,6 +8,9 @@
     <string name="add_user">Add User</string>
     <string name="warning_msg">Please insert all the details !</string>
     <string name="welcome_user">Welcome User !!!</string>
+    <string name="insert_success"> Data added successfully!</string>
+    <string name="delete_success"> Data removed successfully!</string>
+
     <string-array name="userType">
         <item>Admin</item>
         <item>Normal User</item>

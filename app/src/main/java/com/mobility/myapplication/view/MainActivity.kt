@@ -3,19 +3,22 @@ package com.mobility.myapplication.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
+import com.mobility.myapplication.Constants.AVATAR_URL_USER
+import com.mobility.myapplication.Constants.ID
+import com.mobility.myapplication.Constants.INSERT_REQUEST_CODE
+import com.mobility.myapplication.Constants.LOGIN_USER
+import com.mobility.myapplication.Constants.TYPE_USER
+import com.mobility.myapplication.Constants.UPDATE_REQUEST_CODE
 import com.mobility.myapplication.R
 import com.mobility.myapplication.adapter.UserListAdapter
 import com.mobility.myapplication.model.User
+import com.mobility.myapplication.showMessage
 import com.mobility.myapplication.viewmodel.UserViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -25,15 +28,6 @@ class MainActivity : AppCompatActivity() {
     private var userList: List<User>? = null
     private var recyclerView: RecyclerView? = null
     private var userListAdapter: UserListAdapter? = null
-
-    companion object {
-        val LOGIN_USER: String? = "login_user"
-        val TYPE_USER: String? = "type_user"
-        val AVATAR_URL_USER: String? = "avatar_user"
-        val ID: String? = "id"
-        val INSERT_REQUEST_CODE: Int? = 1
-        val UPDATE_REQUEST_CODE: Int? = 2
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,9 +57,8 @@ class MainActivity : AppCompatActivity() {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 userListAdapter?.getUsers(viewHolder.adapterPosition)?.let {
-                    userViewModel?.deleteUser(
-                        it
-                    )
+                    userViewModel?.deleteUser(it)
+                    showMessage(resources.getString(R.string.delete_success))
                 }
             }
         }).attachToRecyclerView(recyclerView)
@@ -82,11 +75,13 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        fab.setOnClickListener { view ->
-            startActivityForResult(Intent(this@MainActivity, AddUserActivity::class.java), INSERT_REQUEST_CODE!!)
+        fab.setOnClickListener {
+            startActivityForResult(
+                Intent(this@MainActivity, AddUserActivity::class.java),
+                INSERT_REQUEST_CODE!!
+            )
         }
     }
-
 
     private fun initRecycleView() {
         recyclerView = findViewById(R.id.recycle_view)
@@ -99,21 +94,28 @@ class MainActivity : AppCompatActivity() {
 
         if (requestCode == INSERT_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             val user = User()
-            user.login = data!!.getStringExtra(LOGIN_USER)
-            user.type = data!!.getStringExtra(TYPE_USER)
-            user.avatarUrl = data!!.getStringExtra(AVATAR_URL_USER)
-            //adding the new user locally
-            userViewModel?.insertUser(user)
+            data?.let {
+                user.login = it.getStringExtra(LOGIN_USER)
+                user.type = it.getStringExtra(TYPE_USER)
+                user.avatarUrl = it.getStringExtra(AVATAR_URL_USER)
+                //adding the new user locally
+                userViewModel?.insertUser(user)
+                showMessage(resources.getString(R.string.insert_success))
+            }
+
 
         } else if (requestCode == UPDATE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             val user = User()
-            user.id = data!!.getIntExtra(ID, -1)
-            if (user.id != -1) {
-                user.login = data!!.getStringExtra(LOGIN_USER)
-                user.type = data!!.getStringExtra(TYPE_USER)
-                user.avatarUrl = data!!.getStringExtra(AVATAR_URL_USER)
-                //deleting the user locally
-                userViewModel?.deleteUser(user)
+            data?.let {
+                user.id = it.getIntExtra(ID, -1)
+                if (user.id != -1) {
+                    user.login = it.getStringExtra(LOGIN_USER)
+                    user.type = it.getStringExtra(TYPE_USER)
+                    user.avatarUrl = it.getStringExtra(AVATAR_URL_USER)
+                    //deleting the user locally
+                    userViewModel?.deleteUser(user)
+                    showMessage(resources.getString(R.string.delete_success))
+                }
             }
         }
     }
