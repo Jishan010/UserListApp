@@ -25,15 +25,15 @@ class UserRepository(application: Application) {
         userDao = userDatabase!!.getNoteDao()
     }
 
-    fun insertNote(user: User) {
+    fun insertUser(user: User) {
         InsertAsyncTask().execute(user)
     }
 
-    fun updateNote(user: User) {
+    fun updateUser(user: User) {
         UpdateAsyncTask().execute(user)
     }
 
-    fun deleteNote(user: User) {
+    fun deleteUser(user: User) {
         DeleteAsyncTask().execute(user)
     }
 

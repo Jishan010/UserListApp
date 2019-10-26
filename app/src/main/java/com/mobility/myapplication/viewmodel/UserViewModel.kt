@@ -26,14 +26,14 @@ open class UserViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun insertUser(user: User) {
-        userRepository?.insertNote(user)
+        userRepository?.insertUser(user)
     }
 
     fun updateUser(user: User) {
-        userRepository?.updateNote(user)
+        userRepository?.updateUser(user)
     }
 
     fun deleteUser(user: User) {
-        userRepository?.deleteNote(user)
+        userRepository?.deleteUser(user)
     }
 }
