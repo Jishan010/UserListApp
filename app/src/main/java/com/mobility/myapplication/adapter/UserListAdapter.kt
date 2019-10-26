@@ -31,7 +31,7 @@ class UserListAdapter : ListAdapter<User, UserListAdapter.MyUserViewHolder>(diff
     private var onItemClickListener: OnItemClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyUserViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.user_list_adapter, null)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.user_list_adapter, parent,false)
         return MyUserViewHolder(view)
     }
 
