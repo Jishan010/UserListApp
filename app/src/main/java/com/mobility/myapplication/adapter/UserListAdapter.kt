@@ -28,11 +28,10 @@ import com.mobility.myapplication.model.User
  */
 class UserListAdapter : ListAdapter<User, UserListAdapter.MyUserViewHolder>(diffCallback) {
 
-    //    private List<Note> notes = new ArrayList<>();
     private var onItemClickListener: OnItemClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyUserViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.note_adapter, null)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.user_list_adapter, null)
         return MyUserViewHolder(view)
     }
 
