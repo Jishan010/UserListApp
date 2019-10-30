@@ -93,29 +93,35 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == INSERT_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            val user = User()
             data?.let {
-                user.login = it.getStringExtra(LOGIN_USER)
-                user.type = it.getStringExtra(TYPE_USER)
-                user.avatarUrl = it.getStringExtra(AVATAR_URL_USER)
-                //adding the new user locally
-                userViewModel?.insertUser(user)
-                showMessage(resources.getString(R.string.insert_success))
+                with(User())
+                {
+                    login = it.getStringExtra(LOGIN_USER)
+                    type = it.getStringExtra(TYPE_USER)
+                    avatarUrl = it.getStringExtra(AVATAR_URL_USER)
+                    //adding the new user locally
+                    userViewModel?.insertUser(this)
+                    showMessage(resources.getString(R.string.insert_success))
+                }
+
             }
 
 
         } else if (requestCode == UPDATE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            val user = User()
             data?.let {
-                user.id = it.getIntExtra(ID, -1)
-                if (user.id != -1) {
-                    user.login = it.getStringExtra(LOGIN_USER)
-                    user.type = it.getStringExtra(TYPE_USER)
-                    user.avatarUrl = it.getStringExtra(AVATAR_URL_USER)
-                    //deleting the user locally
-                    userViewModel?.deleteUser(user)
-                    showMessage(resources.getString(R.string.delete_success))
+                with(User())
+                {
+                    id = it.getIntExtra(ID, -1)
+                    if (id != -1) {
+                        login = it.getStringExtra(LOGIN_USER)
+                        type = it.getStringExtra(TYPE_USER)
+                        avatarUrl = it.getStringExtra(AVATAR_URL_USER)
+                        //deleting the user locally
+                        userViewModel?.deleteUser(this)
+                        showMessage(resources.getString(R.string.delete_success))
+                    }
                 }
+
             }
         }
     }
