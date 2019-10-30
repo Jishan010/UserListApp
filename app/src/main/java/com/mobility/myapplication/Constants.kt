@@ -12,4 +12,7 @@ object Constants {
     val ID: String? = "id"
     val INSERT_REQUEST_CODE: Int? = 1
     val UPDATE_REQUEST_CODE: Int? = 2
+    const val INSERT: String = "insert"
+    const val UPDATE: String = "update"
+    const val DELETE: String = "delete"
 }

@@ -3,7 +3,9 @@ package com.mobility.myapplication.model
 import android.app.Application
 import android.os.AsyncTask
 import androidx.lifecycle.LiveData
-
+import com.mobility.myapplication.Constants.UPDATE
+import com.mobility.myapplication.Constants.DELETE
+import com.mobility.myapplication.Constants.INSERT
 /**
  *
  * Created By J7202687 On 10/22/2019
@@ -26,41 +28,36 @@ class UserRepository(application: Application) {
     }
 
     fun insertUser(user: User) {
-        InsertAsyncTask().execute(user)
+        DataBaseOperationAsyncTask(INSERT).execute(user)
     }
 
     fun updateUser(user: User) {
-        UpdateAsyncTask().execute(user)
+        DataBaseOperationAsyncTask(UPDATE).execute(user)
     }
 
     fun deleteUser(user: User) {
-        DeleteAsyncTask().execute(user)
+        DataBaseOperationAsyncTask(DELETE).execute(user)
     }
 
 
-    //async task for inserting users
-    class InsertAsyncTask : AsyncTask<User, Void, Void>() {
-        override fun doInBackground(vararg users: User): Void? {
-            userDao?.insertUser(users[0])
+    //async task for database operations
+    class DataBaseOperationAsyncTask(operationType: String) : AsyncTask<User, Void, Void>() {
+        private var operationType: String? = null
+
+        init {
+            this.operationType = operationType
+        }
+
+        override fun doInBackground(vararg user: User): Void? {
+            when (operationType) {
+                UPDATE -> userDao?.updateUser(user[0])
+                DELETE -> userDao?.deleteUser(user[0])
+                INSERT -> userDao?.insertUser(user[0])
+            }
             return null
         }
     }
 
-    //async task for deleting users
-    class DeleteAsyncTask : AsyncTask<User, Void, Void>() {
-        override fun doInBackground(vararg users: User): Void? {
-            userDao?.deleteUser(users[0])
-            return null
-        }
-    }
-
-    //async task for updating users
-    class UpdateAsyncTask : AsyncTask<User, Void, Void>() {
-        override fun doInBackground(vararg users: User): Void? {
-            userDao?.updateUser(users[0])
-            return null
-        }
-    }
 
     companion object {
         var userDao: UserDao? = null
