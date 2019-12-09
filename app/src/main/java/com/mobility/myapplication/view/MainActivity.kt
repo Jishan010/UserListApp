@@ -3,7 +3,10 @@ package com.mobility.myapplication.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -21,6 +24,10 @@ import com.mobility.myapplication.model.User
 import com.mobility.myapplication.showMessage
 import com.mobility.myapplication.viewmodel.UserViewModel
 import kotlinx.android.synthetic.main.activity_main.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,12 +35,15 @@ class MainActivity : AppCompatActivity() {
     private var userList: List<User>? = null
     private var recyclerView: RecyclerView? = null
     private var userListAdapter: UserListAdapter? = null
+    private var fragmentManager: FragmentManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d("MainActivity","onCreate")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
         initRecycleView()
+        fragmentManager = supportFragmentManager
         userListAdapter = UserListAdapter()
         recyclerView!!.adapter = userListAdapter
 
@@ -66,12 +76,20 @@ class MainActivity : AppCompatActivity() {
 
         userListAdapter?.setOnItemClickListener(object : UserListAdapter.OnItemClickListener {
             override fun updateUser(user: User) {
-                val intent = Intent(this@MainActivity, FullImageScreen::class.java)
+             /*   val intent = Intent(this@MainActivity, FullImageScreen::class.java)
                 intent.putExtra(ID, user.id)
                 intent.putExtra(LOGIN_USER, user.login)
                 intent.putExtra(TYPE_USER, user.type)
                 intent.putExtra(AVATAR_URL_USER, user.avatarUrl)
-                startActivityForResult(intent, UPDATE_REQUEST_CODE!!)
+//                startActivityForResult(intent, UPDATE_REQUEST_CODE!!)  //commented to demonstrate eventbus
+                startActivity(intent)*/
+
+                val fragment = FullScreenImageFragment.newInstance(user.login!!,user.id!!,user.type!!,user.avatarUrl!!)
+                val fragmentTransaction =
+                    fragmentManager!!.beginTransaction()
+                fragmentTransaction.addToBackStack(null)
+                fragmentTransaction.replace(R.id.fragContainer, fragment)
+                fragmentTransaction.commit()
             }
         })
 
@@ -81,7 +99,50 @@ class MainActivity : AppCompatActivity() {
                 INSERT_REQUEST_CODE!!
             )
         }
+
+
     }
+
+    /*EventBus Implementation starts from here*/
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+        Log.d("MainActivity","onStart")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("MainActivity","onResume")
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        Log.d("MainActivity","onRestart")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("MainActivity","onPause")
+    }
+
+    override fun onStop() {
+        EventBus.getDefault().unregister(this)
+        Log.d("MainActivity","onStop")
+        super.onStop()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("MainActivity","onDestroy")
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public fun onMessageEvent(user: User) {
+        userViewModel?.deleteUser(user)
+        showMessage(resources.getString(R.string.delete_success))
+    }
+    /*EventBus Implementation ends here*/
+
 
     private fun initRecycleView() {
         recyclerView = findViewById(R.id.recycle_view)
